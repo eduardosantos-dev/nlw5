@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Slider from "rc-slider";
+import { MdVolumeUp } from "react-icons/md";
 
 import { usePlayer } from "../../contexts/PlayerContext";
 
@@ -11,6 +12,7 @@ import { convertDurationToTimeString } from "../../utils/convertDurationToTimeSt
 export function Player() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [progress, setProgress] = useState(0);
+  const [volume, setVolume] = useState(50);
 
   const {
     episodeList,
@@ -58,6 +60,11 @@ export function Player() {
     } else {
       clearPlayerState;
     }
+  }
+
+  function handleVolumeSeek(amount: number) {
+    audioRef.current.volume = amount / 100;
+    setVolume(amount);
   }
 
   const episode = episodeList[currentEpisodeIndex];
@@ -160,6 +167,24 @@ export function Player() {
             className={isLooping ? styles.isActive : ""}>
             <img src="/repeat.svg" alt="Repetir" />
           </button>
+        </div>
+
+        <div className={`${styles.progress} ${styles.volume}`}>
+          <MdVolumeUp size={"2em"} />
+          <div className={styles.slider}>
+            {episode ? (
+              <Slider
+                max={100}
+                value={volume}
+                onChange={handleVolumeSeek}
+                trackStyle={{ backgroundColor: "#04d361" }}
+                railStyle={{ backgroundColor: "#9f75ff" }}
+                handleStyle={{ borderColor: "#04d361", borderWidth: 4 }}
+              />
+            ) : (
+              <div className={styles.emptySlider} />
+            )}
+          </div>
         </div>
       </footer>
     </div>
